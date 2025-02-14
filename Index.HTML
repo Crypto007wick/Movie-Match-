@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Movie Match</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>Movie Match Game</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="game">
+            <h2>Match the Movie with the Actor!</h2>
+            <p>Can you match these movies with the actors who starred in them?</p>
+
+            <div id="movie-list" class="movie-list">
+                <!-- Movie list will appear here -->
+            </div>
+
+            <div id="actor-list" class="actor-list">
+                <!-- Actor list will appear here -->
+            </div>
+
+            <button id="check-match-btn">Check Matches</button>
+            <div id="result"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Movie Match | All rights reserved</p>
+    </footer>
+
+    <script>
+        // Movie and Actor data (Movie -> Actor)
+        const movieActorPairs = [
+            { movie: "The Matrix", actor: "Keanu Reeves" },
+            { movie: "Titanic", actor: "Leonardo DiCaprio" },
+            { movie: "Forrest Gump", actor: "Tom Hanks" },
+            { movie: "The Dark Knight", actor: "Christian Bale" },
+            { movie: "The Avengers", actor: "Robert Downey Jr." }
+        ];
+
+        // Shuffle function to randomize the order of items
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Randomly shuffle and display the movie and actor lists
+        function displayGame() {
+            const movieList = document.getElementById('movie-list');
+            const actorList = document.getElementById('actor-list');
+            const resultDiv = document.getElementById('result');
+
+            // Shuffle movieActorPairs
+            shuffle(movieActorPairs);
+
+            // Clear previous content
+            movieList.innerHTML = '';
+            actorList.innerHTML = '';
+
+            // Create draggable movie elements
+            movieActorPairs.forEach(pair => {
+                const movieDiv = document.createElement('div');
+                movieDiv.textContent = pair.movie;
+                movieDiv.classList.add('movie');
+                movieDiv.setAttribute('draggable', true);
+                movieDiv.dataset.movie = pair.movie;
+                movieList.appendChild(movieDiv);
+            });
+
+            // Create actor elements
+            const actors = movieActorPairs.map(pair => pair.actor);
+            shuffle(actors); // Shuffle the actors list
+            actors.forEach(actor => {
+                const actorDiv = document.createElement('div');
+                actorDiv.textContent = actor;
+                actorDiv.classList.add('actor');
+                actorDiv.setAttribute('data-actor', actor);
+                actorList.appendChild(actorDiv);
+            });
+
+            // Drag and drop functionality
+            const movies = document.querySelectorAll('.movie');
+            const actors = document.querySelectorAll('.actor');
+
+            movies.forEach(movie => {
+                movie.addEventListener('dragstart', (event) => {
+                    event.dataTransfer.setData('movie', event.target.dataset.movie);
+                });
+            });
+
+            actors.forEach(actor => {
+                actor.addEventListener('dragover', (event) => {
+                    event.preventDefault();
+                });
+                actor.addEventListener('drop', (event) => {
+                    event.preventDefault();
+                    const droppedMovie = event.dataTransfer.getData('movie');
+                    const droppedActor = actor.textContent;
+
+                    // Check if it's a correct match
+                    const correctPair = movieActorPairs.find(pair => pair.movie === droppedMovie);
+                    if (correctPair && correctPair.actor === droppedActor) {
+                        actor.classList.add('correct');
+                        movie.classList.add('correct');
+                    } else {
+                        actor.classList.add('incorrect');
+                    }
+                });
+            });
+
+            // Check button
+            const checkMatchBtn = document.getElementById('check-match-btn');
+            checkMatchBtn.addEventListener('click', () => {
+                let correctMatches = 0;
+                movieActorPairs.forEach(pair => {
+                    const movieElement = document.querySelector(`.movie[data-movie="${pair.movie}"]`);
+                    const actorElement = document.querySelector(`.actor[data-actor="${pair.actor}"]`);
+                    if (movieElement && actorElement && movieElement.classList.contains('correct') && actorElement.classList.contains('correct')) {
+                        correctMatches++;
+                    }
+                });
+
+                resultDiv.textContent = `${correctMatches} out of ${movieActorPairs.length} matches correct!`;
+            });
+        }
+
+        // Initialize the game
+        window.onload = displayGame;
+    </script>
+</body>
+
+</html>
