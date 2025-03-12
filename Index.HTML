@@ -1,149 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Movie Match</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <title>Movie Quiz </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("https://media.istockphoto.com/photos/topographic-map-background-concept-topo-contour-map-rendering-and-picture-id984824408?b=1&k=20&m=984824408&s=170667a&w=0&h=WwjFwR0iX4EIAAhld0ve-o9_lU7WVWCTysXLAyBZJPY=");
+) no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
 
-<body>
-    <header>
-        <h1>Movie Match Game</h1>
-        <nav>
-            <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+        .quiz-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
 
-    <main>
-        <section class="game">
-            <h2>Match the Movie with the Actor!</h2>
-            <p>Can you match these movies with the actors who starred in them?</p>
+        h1 {
+            color: #ff4081;
+            margin-bottom: 30px;
+        }
 
-            <div id="movie-list" class="movie-list">
-                <!-- Movie list will appear here -->
-            </div>
+        .quiz-box {
+            display: none;
+        }
 
-            <div id="actor-list" class="actor-list">
-                <!-- Actor list will appear here -->
-            </div>
+        .question {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
 
-            <button id="check-match-btn">Check Matches</button>
-            <div id="result"></div>
-        </section>
-    </main>
+        #question-image {
+            max-width: 100%;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
 
-    <footer>
-        <p>&copy; 2025 Movie Match | All rights reserved</p>
-    </footer>
+        .options {
+            list-style: none;
+            padding: 0;
+        }
 
-    <script>
-        // Movie and Actor data (Movie -> Actor)
-        const movieActorPairs = [
-            { movie: "The Matrix", actor: "Keanu Reeves" },
-            { movie: "Titanic", actor: "Leonardo DiCaprio" },
-            { movie: "Forrest Gump", actor: "Tom Hanks" },
-            { movie: "The Dark Knight", actor: "Christian Bale" },
-            { movie: "The Avengers", actor: "Robert Downey Jr." }
-        ];
+        .options li {
+            background-color: #f9f9f9;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: #333;
+        }
 
-        // Shuffle function to randomize the order of items
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+        .options li:hover {
+            background-color: #e0e0e0;
+        }
+
+        .options li.selected {
+            background-color: #ff4081;
+            color: white;
+        }
+
+        .next-btn {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+            margin-top: 20px;
+        }
+
+        .next-btn:hover {
+            background-color: #f50057;
+        }
+
+        .result-box {
+            display: none;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+
+        .restart-btn,
+        .quit-btn {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .restart-btn:hover,
+        .quit-btn:hover {
+            background-color: #f50057;
+        }
+
+        @media (max-width: 576px) {
+            .quiz-container {
+                width: 90%;
             }
         }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1> Movie Match </h1>
 
-        // Randomly shuffle and display the movie and actor lists
-        function displayGame() {
-            const movieList = document.getElementById('movie-list');
-            const actorList = document.getElementById('actor-list');
-            const resultDiv = document.getElementById('result');
+        <!-- Welcome Box -->
+        <div id="start-box">
+            <button id="start-btn">Start Quiz</button>
+        </div>
 
-            // Shuffle movieActorPairs
-            shuffle(movieActorPairs);
+        <!-- Quiz Box -->
+        <div id="quiz-box" class="quiz-box">
+            <div id="question" class="question"></div>
+            <img id="question-image" src="" alt="Question Image">
+            <ul id="options" class="options"></ul>
+            <button id="next-btn" class="next-btn">Next</button>
+        </div>
 
-            // Clear previous content
-            movieList.innerHTML = '';
-            actorList.innerHTML = '';
+        <!-- Result Box -->
+        <div id="result-box" class="result-box">
+            <div class="score"></div>
+            <button class="restart-btn" id="restart-btn">Restart</button>
+            <button class="quit-btn" id="quit-btn">Quit</button>
+        </div>
+    </div>
 
-            // Create draggable movie elements
-            movieActorPairs.forEach(pair => {
-                const movieDiv = document.createElement('div');
-                movieDiv.textContent = pair.movie;
-                movieDiv.classList.add('movie');
-                movieDiv.setAttribute('draggable', true);
-                movieDiv.dataset.movie = pair.movie;
-                movieList.appendChild(movieDiv);
+    <script>
+        const startBtn = document.getElementById("start-btn");
+        const startBox = document.getElementById("start-box");
+        const quizBox = document.getElementById("quiz-box");
+        const resultBox = document.getElementById("result-box");
+        const questionEl = document.getElementById("question");
+        const optionsEl = document.getElementById("options");
+        const nextBtn = document.getElementById("next-btn");
+        const restartBtn = document.getElementById("restart-btn");
+        const quitBtn = document.getElementById("quit-btn");
+        const questionImage = document.getElementById("question-image");
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questions = [
+            {
+                question: "What is the name of the toy cowboy in 'Toy Story'?",
+                options: ["Woody", "Buzz Lightyear", "Mr. Potato Head", "Slinky Dog"],
+                answer: "Woody",
+                image: "https://via.placeholder.com/600x400/ff4081/FFFFFF?text=Toy+Story"
+            },
+            {
+                question: "Who is the villain in 'The Lion King'?",
+                options: ["Scar", "Ursula", "Jafar", "Hades"],
+                answer: "Scar",
+                image: "https://via.placeholder.com/600x400/ff4081/FFFFFF?text=The+Lion+King"
+            },
+            {
+                question: "In 'Avengers: Endgame', who wields Thor's hammer?",
+                options: ["Iron Man", "Captain America", "Hulk", "Thor"],
+                answer: "Captain America",
+                image: "https://via.placeholder.com/600x400/ff4081/FFFFFF?text=Avengers%3A+Endgame"
+            },
+            {
+                question: "What is the name of Elsa's sister in 'Frozen'?",
+                options: ["Ariel", "Anna", "Rapunzel", "Moana"],
+                answer: "Anna",
+                image: "https://via.placeholder.com/600x400/ff4081/FFFFFF?text=Frozen"
+            },
+            {
+                question: "What is Spider-Man's real name?",
+                options: ["Peter Parker", "Bruce Wayne", "Clark Kent", "Tony Stark"],
+                answer: "Peter Parker",
+                image: "https://via.placeholder.com/600x400/ff4081/FFFFFF?text=Spider-Man"
+            }
+        ];
+
+        // Start quiz
+        startBtn.addEventListener('click', function() {
+            startBox.style.display = 'none';
+            quizBox.style.display = 'block';
+            loadQuestion();
+        });
+
+        // Load the current question
+        function loadQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            questionEl.textContent = currentQuestion.question;
+            questionImage.src = currentQuestion.image;
+            optionsEl.innerHTML = '';
+            currentQuestion.options.forEach(option => {
+                const optionEl = document.createElement('li');
+                optionEl.textContent = option;
+                optionEl.addEventListener('click', selectOption);
+                optionsEl.appendChild(optionEl);
             });
-
-            // Create actor elements
-            const actors = movieActorPairs.map(pair => pair.actor);
-            shuffle(actors); // Shuffle the actors list
-            actors.forEach(actor => {
-                const actorDiv = document.createElement('div');
-                actorDiv.textContent = actor;
-                actorDiv.classList.add('actor');
-                actorDiv.setAttribute('data-actor', actor);
-                actorList.appendChild(actorDiv);
-            });
-
-            // Drag and drop functionality
-            const movies = document.querySelectorAll('.movie');
-            const actors = document.querySelectorAll('.actor');
-
-            movies.forEach(movie => {
-                movie.addEventListener('dragstart', (event) => {
-                    event.dataTransfer.setData('movie', event.target.dataset.movie);
-                });
-            });
-
-            actors.forEach(actor => {
-                actor.addEventListener('dragover', (event) => {
-                    event.preventDefault();
-                });
-                actor.addEventListener('drop', (event) => {
-                    event.preventDefault();
-                    const droppedMovie = event.dataTransfer.getData('movie');
-                    const droppedActor = actor.textContent;
-
-                    // Check if it's a correct match
-                    const correctPair = movieActorPairs.find(pair => pair.movie === droppedMovie);
-                    if (correctPair && correctPair.actor === droppedActor) {
-                        actor.classList.add('correct');
-                        movie.classList.add('correct');
-                    } else {
-                        actor.classList.add('incorrect');
-                    }
-                });
-            });
-
-            // Check button
-            const checkMatchBtn = document.getElementById('check-match-btn');
-            checkMatchBtn.addEventListener('click', () => {
-                let correctMatches = 0;
-                movieActorPairs.forEach(pair => {
-                    const movieElement = document.querySelector(`.movie[data-movie="${pair.movie}"]`);
-                    const actorElement = document.querySelector(`.actor[data-actor="${pair.actor}"]`);
-                    if (movieElement && actorElement && movieElement.classList.contains('correct') && actorElement.classList.contains('correct')) {
-                        correctMatches++;
-                    }
-                });
-
-                resultDiv.textContent = `${correctMatches} out of ${movieActorPairs.length} matches correct!`;
-            });
+            nextBtn.style.display = 'none';
         }
 
-        // Initialize the game
-        window.onload = displayGame;
+        // Select an option
+        function selectOption(e) {
+            const selectedOption = e.target;
+            const currentQuestion = questions[currentQuestionIndex];
+            if (selectedOption.textContent === currentQuestion.answer) {
+                score++;
+                selectedOption.classList.add('selected');
+            } else {
+                selectedOption.classList.add('incorrect');
+                const options = optionsEl.querySelectorAll('li');
+                options.forEach(option => {
+                    if (option.textContent === currentQuestion.answer) {
+                        option.classList.add('selected');
+                    }
+                });
+            }
+            nextBtn.style.display = 'block';
+            optionsEl.querySelectorAll('li').forEach(option => option.classList.add('disabled'));
+        }
+
+        // Next question or show results
+        nextBtn.addEventListener('click', function() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        // Show results
+        function showResults() {
+            quizBox.style.display = 'none';
+            resultBox.style.display = 'block';
+            document.querySelector('.score').textContent = `You scored ${score} out of ${questions.length}`;
+        }
+
+        // Restart quiz
+        restartBtn.addEventListener('click', function() {
+            score = 0;
+            currentQuestionIndex = 0;
+            resultBox.style.display = 'none';
+            startBox.style.display = 'block';
+        });
+
+        // Quit quiz
+        quitBtn.addEventListener('click', function() {
+            resultBox.style.display = 'none';
+            startBox.style.display = 'block';
+        });
     </script>
 </body>
-
 </html>
+
