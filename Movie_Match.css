@@ -1,0 +1,114 @@
+body {
+            font-family: Arial, sans-serif;
+            background-image: url("https://media.istockphoto.com/photos/topographic-map-background-concept-topo-contour-map-rendering-and-picture-id984824408?b=1&k=20&m=984824408&s=170667a&w=0&h=WwjFwR0iX4EIAAhld0ve-o9_lU7WVWCTysXLAyBZJPY=");
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .quiz-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff4081;
+            margin-bottom: 30px;
+        }
+
+        .quiz-box {
+            display: none;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        #question-image {
+            max-width: 100%;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            background-color: #f9f9f9;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: #333;
+        }
+
+        .options li:hover {
+            background-color: #e0e0e0;
+        }
+
+        .options li.selected {
+            background-color: #ff4081;
+            color: white;
+        }
+
+        .next-btn {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+            margin-top: 20px;
+        }
+
+        .next-btn:hover {
+            background-color: #f50057;
+        }
+
+        .result-box {
+            display: none;
+        }
+
+        .score {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+
+        .restart-btn,
+        .quit-btn {
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .restart-btn:hover,
+        .quit-btn:hover {
+            background-color: #f50057;
+        }
+
+        @media (max-width: 576px) {
+            .quiz-container {
+                width: 90%;
+            }
+        }
